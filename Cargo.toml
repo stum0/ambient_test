@@ -1,0 +1,23 @@
+[package]
+name = "swordle"
+
+edition = "2021"
+publish = false
+version = "0.0.1"
+
+[dependencies]
+ambient_api = "0.2.1"
+
+[[bin]]
+name = "client_swordle"
+path = "src/client.rs"
+required-features = ["client"]
+
+[[bin]]
+name = "server_swordle"
+path = "src/server.rs"
+required-features = ["server"]
+
+[features]
+client = ["ambient_api/client"]
+server = ["ambient_api/server"]

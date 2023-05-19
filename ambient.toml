@@ -1,0 +1,17 @@
+[project]
+id = "swordle"
+name = "swordle"
+version = "0.0.1"
+
+[components]
+player_camera_ref = { type = "EntityId", name = "Player camera ref", description = "The player's camera.", attributes = [
+    "Debuggable",
+] }
+player_mouse_location = { type = "Vec2", name = "Player mouse location", description = "The player's mouse location.", attributes = [
+    "Debuggable",
+] }
+
+[messages.input]
+description = "Describes the input state of the player."
+[messages.input.fields]
+mouse_delta_x = { type = "Vec2", name = "Mouse location", description = "The mouse location." }
