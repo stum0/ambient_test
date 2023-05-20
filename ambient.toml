@@ -7,11 +7,12 @@ version = "0.0.1"
 player_camera_ref = { type = "EntityId", name = "Player camera ref", description = "The player's camera.", attributes = [
     "Debuggable",
 ] }
-player_mouse_location = { type = "Vec2", name = "Player mouse location", description = "The player's mouse location.", attributes = [
+player_mouse_location = { type = "Vec3", name = "Player mouse location", description = "The player's mouse location.", attributes = [
     "Debuggable",
 ] }
 
 [messages.input]
 description = "Describes the input state of the player."
 [messages.input.fields]
-mouse_delta_x = { type = "Vec2", name = "Mouse location", description = "The mouse location." }
+screen_to_world_dir = { type = "Vec3", name = "screen_to_world_dir ", description = "screen to world direction." }
+screen_to_world_ori = { type = "Vec3", name = "screen_to_world_ori", description = "screen to world origin." }

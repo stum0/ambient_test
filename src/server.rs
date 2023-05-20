@@ -1,8 +1,28 @@
-use ambient_api::{components::core::primitives::cube, concepts::make_transformable, prelude::*};
+use ambient_api::{
+    components::core::{
+        physics::{
+            character_controller_height, character_controller_radius, physics_controlled,
+            plane_collider,
+        },
+        primitives::{cube, quad},
+    },
+    concepts::make_transformable,
+    physics::raycast_first,
+    prelude::*,
+};
 use components::player_mouse_location;
 
 #[main]
 pub fn main() {
+    Entity::new()
+        .with_merge(make_transformable())
+        .with_default(quad())
+        .with(scale(), Vec3::ONE * 100.)
+        .with(color(), vec4(1., 0., 0., 1.))
+        .with_default(plane_collider())
+        .with(translation(), vec3(0., 0., 0.))
+        .spawn();
+
     spawn_query(player()).bind(move |players| {
         for (id, _) in players {
             entity::add_components(
@@ -10,8 +30,8 @@ pub fn main() {
                 Entity::new()
                     .with_merge(make_transformable())
                     .with_default(cube())
-                    .with(color(), Vec4::ONE)
-                    .with(scale(), vec3(0.1, 0.1, 0.1))
+                    .with(color(), Vec4::ONE * 10.)
+                    .with(scale(), vec3(0.5, 0.5, 0.5))
                     .with(translation(), vec3(0., 0., 0.)),
             );
         }
@@ -20,15 +40,20 @@ pub fn main() {
     messages::Input::subscribe(move |source, msg| {
         let Some(player_id) = source.client_entity_id() else { return; };
 
-        entity::add_component(player_id, player_mouse_location(), msg.mouse_delta_x);
+        if let Some(pos) =
+            raycast_first(msg.screen_to_world_ori, msg.screen_to_world_dir.normalize())
+        {
+            entity::add_component(player_id, player_mouse_location(), pos.position);
+        }
     });
 
     query((player(), player_mouse_location())).each_frame(move |players| {
         for (player_id, (_, mouse_pos)) in players {
-            let displace = (mouse_pos).extend(0.0);
-
-            println!("Player {} clicked {}", player_id, displace);
-            entity::set_component(player_id, translation(), displace);
+            let speed = 0.1;
+            let current_pos = entity::get_component::<Vec3>(player_id, translation()).unwrap();
+            let direction = mouse_pos - current_pos;
+            let new_pos = current_pos + direction * speed;
+            entity::set_component(player_id, translation(), new_pos);
         }
     });
 }
