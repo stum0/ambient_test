@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use ambient_api::{
     components::core::{
         physics::{
@@ -48,12 +50,27 @@ pub fn main() {
     });
 
     query((player(), player_mouse_location())).each_frame(move |players| {
+        let mut player_positions: HashMap<EntityId, Vec3> = HashMap::new();
+        for (player_id, (_, _mouse_pos)) in &players {
+            let current_pos = entity::get_component::<Vec3>(*player_id, translation()).unwrap();
+            player_positions.insert(*player_id, current_pos);
+        }
+
         for (player_id, (_, mouse_pos)) in players {
-            let speed = 0.1;
-            let current_pos = entity::get_component::<Vec3>(player_id, translation()).unwrap();
-            let direction = mouse_pos - current_pos;
-            let new_pos = current_pos + direction * speed;
+            let speed = 0.03;
+            let current_pos = player_positions.get(&player_id).unwrap();
+            let direction = mouse_pos - *current_pos;
+            let new_pos = *current_pos + direction * speed;
             entity::set_component(player_id, translation(), new_pos);
+
+            for (other_id, other_pos) in &player_positions {
+                if player_id != *other_id {
+                    let distance = (*other_pos - mouse_pos).length();
+                    if distance < 0.5 {
+                        println!("Player {} clicked on player {}", player_id, other_id);
+                    }
+                }
+            }
         }
     });
 }
