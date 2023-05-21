@@ -12,7 +12,7 @@ pub fn main() {
             let local_user_id =
                 entity::get_component(entity::resources(), local_user_id()).unwrap();
             eprintln!("Player joined {user}\nlocal_user_id: {local_user_id:?}");
-            // First, we check if this player is the "local" player, and only then do we attach a camera
+
             if user == local_user_id {
                 eprintln!("Attaching camera to player {}", user);
                 let camera = Entity::new()
@@ -20,7 +20,7 @@ pub fn main() {
                     .with(aspect_ratio_from_window(), EntityId::resources())
                     .with_default(main_scene())
                     .with(user_id(), user)
-                    .with(translation(), vec3(0., 10., 10.))
+                    .with(translation(), vec3(0., 1., 80.))
                     .with(lookat_target(), vec3(0., 0., 0.))
                     .spawn();
 
